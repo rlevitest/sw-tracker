@@ -28,13 +28,6 @@ async def main():
         with open(filename, "r") as f:
             last_drop = f.read().strip()
 
-    # If this is the first time running, save it and exit successfully
-    if not last_drop:
-        with open(filename, "w") as f:
-            f.write(current_drop)
-        print(f"Initialized tracking with: {current_drop}")
-        return
-
     # Check if the drop has changed
     if current_drop != last_drop:
         print(f"NEW DROP DETECTED! Old: {last_drop} | New: {current_drop}")
