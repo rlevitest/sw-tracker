@@ -30,3 +30,4 @@ jobs:
         with:
           commit_message: "Auto-update last seen drop date"
           file_pattern: last_drop.txt
+          push_options: '--force'
