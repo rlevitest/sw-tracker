@@ -1,5 +1,6 @@
 import asyncio
 import os
+import subprocess
 from playwright.async_api import async_playwright
 
 async def main():
@@ -8,11 +9,9 @@ async def main():
         page = await browser.new_page()
         await page.goto("https://www.swroasting.coffee/", wait_until="networkidle")
         
-        # Extract the specific text block containing the drop date
         page_text = await page.evaluate("document.body.innerText")
         await browser.close()
 
-    # Isolate the line or phrase (e.g., "Current drop is roast date 9-1-26")
     current_drop = "Unknown"
     for line in page_text.split('\n'):
         if "Current drop is roast date" in line:
@@ -21,22 +20,27 @@ async def main():
 
     print(f"Live site says: {current_drop}")
 
-    # Read the previously saved drop from file
     filename = "last_drop.txt"
     last_drop = ""
     if os.path.exists(filename):
         with open(filename, "r") as f:
             last_drop = f.read().strip()
 
-# Check if the drop has changed
     if current_drop != last_drop:
         print(f"NEW DROP DETECTED! Old: {last_drop} | New: {current_drop}")
         
-        # Update the file FIRST so it gets saved before failing
         with open(filename, "w") as f:
             f.write(current_drop)
             
-        # Then raise the exception to trigger your failure alert email
+        # Commit and push the updated file internally before throwing the error
+        subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"])
+        subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"])
+        subprocess.run(["git", "add", filename])
+        subprocess.run(["git", "commit", "-m", "Auto-update last seen drop date"])
+        subprocess.run(["git", "push"])
+        
         raise Exception(f"ALERT: S&W Roasting updated their drop to: {current_drop}")
+    else:
+        print("No change in the drop date yet.")
 
 asyncio.run(main())
