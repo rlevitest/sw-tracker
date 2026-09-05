@@ -1,16 +1,25 @@
-import requests
-from bs4 import BeautifulSoup
+import asyncio
+from playwright.async_api import async_playwright
 
-url = "https://www.swroasting.coffee/"
-response = requests.get(url)
-soup = BeautifulSoup(response.text, 'html.parser')
+async def main():
+    async with async_playwright() as p:
+        # Launch a headless browser
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        
+        # Go to the S&W site and wait for the network to idle (loads JS)
+        await page.goto("https://www.swroasting.coffee/", wait_until="networkidle")
+        
+        # Extract all visible text from the fully rendered page
+        page_text = await page.evaluate("document.body.innerText")
+        
+        await browser.close()
+        
+        target_phrase = "Current drop is roast date"
+        
+        if target_phrase in page_text:
+            print("Success: Found the roast drop text on the rendered page.")
+        else:
+            raise Exception("ALERT: Roast drop text not found or changed!")
 
-# Scrape all text on the homepage and look for the drop text
-page_text = soup.get_text()
-target_phrase = "Current drop is roast date"
-
-if target_phrase in page_text:
-    print("Success: The drop phrase is present on the page.")
-else:
-    # This will cause the workflow to fail and notify you
-    raise Exception("ALERT: The target roast text changed or disappeared!")
+asyncio.run(main())
