@@ -28,15 +28,15 @@ async def main():
         with open(filename, "r") as f:
             last_drop = f.read().strip()
 
-    # Check if the drop has changed
+# Check if the drop has changed
     if current_drop != last_drop:
         print(f"NEW DROP DETECTED! Old: {last_drop} | New: {current_drop}")
-        # Update the file to the new drop
+        
+        # Update the file FIRST so it gets saved before failing
         with open(filename, "w") as f:
             f.write(current_drop)
-        # Raise an exception to fail the workflow and trigger your email alert
+            
+        # Then raise the exception to trigger your failure alert email
         raise Exception(f"ALERT: S&W Roasting updated their drop to: {current_drop}")
-    else:
-        print("No change in the drop date yet.")
 
 asyncio.run(main())
