@@ -2,7 +2,7 @@ name: Check S&W Roast Page
 
 on:
   schedule:
-    - cron: '0 */24 * * *' # Runs every 3 hours
+    - cron: '0 */3 * * *'
   workflow_dispatch:
 
 jobs:
@@ -18,7 +18,9 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install requests beautifulsoup4
+        run: |
+          pip install playwright
+          playwright install chromium
 
       - name: Run script
         run: python check.py
