@@ -3,7 +3,7 @@
 A free, automated serverless tracker that monitors [S&W Craft Roasting](https://www.swroasting.coffee/) for new coffee drop updates using Python, Playwright, and GitHub Actions.
 
 ## How It Works
-* **Scheduled Execution:** Runs automatically every 3 hours via GitHub Actions workflow triggers.
+* **Scheduled Execution:** Runs automatically every 12 hours via GitHub Actions workflow triggers.
 * **Headless Rendering:** Boots a headless Chromium browser via Playwright to fully parse the JavaScript-driven Square Online storefront.
 * **Text Extraction:** Scrapes the page inner text to isolate the active drop date string (e.g., *Current drop is roast date 9-1-26*).
 * **State Comparison:** Compares the live site string against the local tracking state stored in `last_drop.txt`.
